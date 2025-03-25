@@ -17,7 +17,8 @@ def load_asr_model(whisper_arch,
                model : Optional[WhisperModel] = None,
                download_root=None,
                threads=4,
-               is_v3_architecture=False):
+               is_v3_architecture=False,
+               task=None):
     """
     Loads and returns a Whisper ASR model for inference.
 
@@ -63,7 +64,7 @@ def load_asr_model(whisper_arch,
         )
 
     if language is not None:
-        tokenizer = faster_whisper.tokenizer.Tokenizer(model.hf_tokenizer, model.model.is_multilingual, language=language)
+        tokenizer = faster_whisper.tokenizer.Tokenizer(model.hf_tokenizer, model.model.is_multilingual, task=task, language=language)
     else:
         print("No language specified, language will be first be detected for each audio file (increases inference time).")
         tokenizer = None

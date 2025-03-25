@@ -42,7 +42,7 @@ class ModelOptimization:
         else:
             print(f"Model {self.model_name} is already in CTranslate2 format")
 
-    def load_transcription_model(self, beam_size: int = 5, language = None, is_v3_architecture = False) -> object:
+    def load_transcription_model(self, task, beam_size: int = 5, language = None, is_v3_architecture = False) -> object:
         """
         Loads and returns the ASR model for transcription with specified parameters.
 
@@ -80,7 +80,8 @@ class ModelOptimization:
             asr_options=asr_options,
             vad_options={"vad_onset": 0.500, "vad_offset": 0.363},
             threads=8,
-            is_v3_architecture=is_v3_architecture
+            is_v3_architecture=is_v3_architecture,
+            task=task
         )
         return model
 
@@ -173,11 +174,11 @@ class SpeechTranscriptionPipeline:
             Dict: Alignment result.
         """
         align_model, align_metadata = load_align_model(language_code=transcription_result['language'], device=self.device, model_name=alignment_model)
-        
+
         if align_model is not None and len(transcription_result["segments"]) > 0:
             if transcription_result.get("language", "en") != align_metadata["language"]:
                 print(f"New language found ({transcription_result['language']})! Loading new alignment model for new language...")
-        
+
         alignment_result = align(
             transcription_result["segments"],
             align_model,
@@ -242,6 +243,3 @@ class SpeechTranscriptionPipeline:
         writer(final_result, srt_file_path, writer_args)
         print(f"Subtitle file saved to: {srt_file_path}")
         return srt_file_path
-
-
-    
